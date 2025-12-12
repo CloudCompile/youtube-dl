@@ -51,3 +51,6 @@ venv/
 
 # VS Code related files
 .vscode
+
+# Web interface downloads
+web/downloads/
