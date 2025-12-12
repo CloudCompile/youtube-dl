@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Downloader - Web Interface</title>
+    <title>YouTube Downloader</title>
     <style>
         * {
             box-sizing: border-box;
@@ -33,7 +33,7 @@
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 30px;
             font-size: 2rem;
         }
 
@@ -43,105 +43,160 @@
             margin-bottom: 10px;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .feature-list {
-            list-style: none;
-            margin-bottom: 30px;
-        }
-
-        .feature-list li {
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
+        .input-group {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .feature-list li:last-child {
-            border-bottom: none;
-        }
-
-        .feature-icon {
-            font-size: 1.5rem;
-        }
-
-        .section {
-            margin-bottom: 30px;
-        }
-
-        .section h2 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .code-block {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 20px;
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e1e1;
             border-radius: 10px;
-            overflow-x: auto;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
+            font-size: 1rem;
+            transition: border-color 0.3s;
         }
 
-        .code-block .comment {
-            color: #6a9955;
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
-        .code-block .command {
-            color: #dcdcaa;
-        }
-
-        .btn {
-            display: inline-block;
+        button {
             padding: 15px 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            text-decoration: none;
+            border: none;
             border-radius: 10px;
             font-size: 1rem;
+            cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            margin-right: 10px;
-            margin-bottom: 10px;
         }
 
-        .btn:hover {
+        button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-secondary {
-            background: #6c757d;
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .btn-secondary:hover {
-            box-shadow: 0 5px 20px rgba(108, 117, 125, 0.4);
+        .video-info {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
 
-        .buttons {
+        .video-info.visible {
+            display: block;
+        }
+
+        .video-preview {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .video-preview img {
+            width: 200px;
+            height: 112px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #ddd;
+        }
+
+        .video-details h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .video-details p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .download-options {
+            margin-top: 20px;
+        }
+
+        .download-options h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .download-card {
+            display: block;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 2px solid #e1e1e1;
+            transition: all 0.2s;
             text-align: center;
-            margin-top: 30px;
         }
 
-        .note {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
+        .download-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .download-card .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .download-card .label {
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .download-card .sublabel {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8d7da;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
             border-radius: 10px;
             padding: 15px;
             margin-top: 20px;
-            color: #856404;
-        }
-
-        .note strong {
-            display: block;
-            margin-bottom: 5px;
+            color: #004085;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         footer {
@@ -156,19 +211,26 @@
             text-decoration: none;
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 600px) {
             .container {
                 padding: 20px;
             }
 
-            h1 {
-                font-size: 1.5rem;
+            .input-group {
+                flex-direction: column;
             }
 
-            .btn {
-                display: block;
-                text-align: center;
-                margin-right: 0;
+            .video-preview {
+                flex-direction: column;
+            }
+
+            .video-preview img {
+                width: 100%;
+                height: auto;
+            }
+
+            .download-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -177,76 +239,162 @@
     <div class="container">
         <div class="logo">📺</div>
         <h1>YouTube Downloader</h1>
-        <p class="subtitle">A browser-based web interface for downloading YouTube videos</p>
 
-        <ul class="feature-list">
-            <li>
-                <span class="feature-icon">🔗</span>
-                <span>Enter any YouTube video URL</span>
-            </li>
-            <li>
-                <span class="feature-icon">📋</span>
-                <span>View video information (title, thumbnail, duration)</span>
-            </li>
-            <li>
-                <span class="feature-icon">🎬</span>
-                <span>Select your preferred video quality/format</span>
-            </li>
-            <li>
-                <span class="feature-icon">📊</span>
-                <span>Track download progress in real-time</span>
-            </li>
-            <li>
-                <span class="feature-icon">💾</span>
-                <span>Download videos directly to your computer</span>
-            </li>
-        </ul>
+        <div class="input-group">
+            <input type="text" id="url-input" placeholder="Paste YouTube URL here..." />
+            <button id="fetch-btn" onclick="fetchVideoInfo()">Get Video</button>
+        </div>
 
-        <div class="section">
-            <h2>🚀 Quick Start</h2>
-            <div class="code-block">
-                <span class="comment"># Clone the repository</span><br>
-                <span class="command">git clone https://github.com/ytdl-org/youtube-dl.git</span><br>
-                <span class="command">cd youtube-dl</span><br><br>
-                <span class="comment"># Install dependencies</span><br>
-                <span class="command">pip install -r requirements-web.txt</span><br><br>
-                <span class="comment"># Start the web server</span><br>
-                <span class="command">cd web</span><br>
-                <span class="command">python app.py</span><br><br>
-                <span class="comment"># Open in browser: http://localhost:5000</span>
+        <div class="error-message" id="error-message"></div>
+
+        <div class="video-info" id="video-info">
+            <div class="video-preview">
+                <img id="video-thumbnail" src="" alt="Video thumbnail" />
+                <div class="video-details">
+                    <h3 id="video-title"></h3>
+                    <p id="video-author"></p>
+                </div>
             </div>
-        </div>
 
-        <div class="section">
-            <h2>⚙️ Configuration</h2>
-            <p>You can configure the server using environment variables:</p>
-            <div class="code-block">
-                <span class="comment"># Set debug mode (default: true)</span><br>
-                <span class="command">export FLASK_DEBUG=false</span><br><br>
-                <span class="comment"># Set host (default: 127.0.0.1)</span><br>
-                <span class="command">export FLASK_HOST=0.0.0.0</span><br><br>
-                <span class="comment"># Set port (default: 5000)</span><br>
-                <span class="command">export FLASK_PORT=8080</span>
+            <div class="download-options">
+                <h4>📥 Download Options:</h4>
+                <div class="download-grid" id="download-grid"></div>
             </div>
-        </div>
 
-        <div class="note">
-            <strong>⚠️ Note</strong>
-            This is a self-hosted application. GitHub Pages hosts this documentation, but the actual downloader requires running the Flask server on your own machine or server.
-        </div>
-
-        <div class="buttons">
-            <a href="https://github.com/ytdl-org/youtube-dl" class="btn" target="_blank" rel="noopener noreferrer">
-                📦 View on GitHub
-            </a>
-            <a href="https://github.com/ytdl-org/youtube-dl/archive/refs/heads/master.zip" class="btn btn-secondary">
-                ⬇️ Download ZIP
-            </a>
+            <div class="info-box">
+                <strong>💡 How to download:</strong><br>
+                Click any download button above. You'll be taken to a download service where you can choose your preferred quality and format.
+            </div>
         </div>
 
         <footer>
             Powered by <a href="https://github.com/ytdl-org/youtube-dl" target="_blank" rel="noopener noreferrer">youtube-dl</a>
         </footer>
     </div>
+
+    <script>
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.classList.add('visible');
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.remove('visible');
+        }
+
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([^&\n?#]+)/,
+                /^([a-zA-Z0-9_-]{11})$/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        async function fetchVideoInfo() {
+            const urlInput = document.getElementById('url-input');
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                showError('Please enter a YouTube URL');
+                return;
+            }
+
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                showError('Invalid YouTube URL. Please enter a valid YouTube video link.');
+                return;
+            }
+
+            hideError();
+            document.getElementById('video-info').classList.remove('visible');
+
+            const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+            // Display video thumbnail (this always works)
+            document.getElementById('video-thumbnail').src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            document.getElementById('video-title').textContent = 'Click a download option below';
+            document.getElementById('video-author').textContent = `Video ID: ${videoId}`;
+
+            // Try to get video info via oEmbed (may fail due to CORS but that's ok)
+            try {
+                const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(youtubeUrl)}&format=json`;
+                const response = await fetch(oembedUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('video-title').textContent = data.title;
+                    document.getElementById('video-author').textContent = `by ${data.author_name}`;
+                }
+            } catch (e) {
+                // oEmbed failed (CORS), but we can still provide download links
+                console.log('oEmbed not available, using fallback');
+            }
+
+            // Create download options using various free services
+            const downloadGrid = document.getElementById('download-grid');
+            
+            const services = [
+                {
+                    icon: '🎬',
+                    label: 'Download Video (MP4)',
+                    sublabel: 'via SaveFrom.net',
+                    url: `https://en.savefrom.net/1-youtube-video-downloader-4/#url=${encodeURIComponent(youtubeUrl)}`
+                },
+                {
+                    icon: '🎵',
+                    label: 'Download Audio (MP3)',
+                    sublabel: 'via Y2Mate',
+                    url: `https://www.y2mate.com/youtube-mp3/${videoId}`
+                },
+                {
+                    icon: '📱',
+                    label: 'Y2Mate',
+                    sublabel: 'Multiple formats',
+                    url: `https://www.y2mate.com/youtube/${videoId}`
+                },
+                {
+                    icon: '⚡',
+                    label: 'SSYouTube',
+                    sublabel: 'Fast download',
+                    url: `https://ssyoutube.com/watch?v=${videoId}`
+                },
+                {
+                    icon: '🔄',
+                    label: '9Convert',
+                    sublabel: 'HD Quality',
+                    url: `https://9convert.com/download?url=${encodeURIComponent(youtubeUrl)}`
+                },
+                {
+                    icon: '💾',
+                    label: 'Cobalt',
+                    sublabel: 'Open source',
+                    url: `https://cobalt.tools/#url=${encodeURIComponent(youtubeUrl)}`
+                }
+            ];
+
+            downloadGrid.innerHTML = services.map(service => `
+                <a href="${service.url}" target="_blank" rel="noopener noreferrer" class="download-card">
+                    <div class="icon">${service.icon}</div>
+                    <div class="label">${service.label}</div>
+                    <div class="sublabel">${service.sublabel}</div>
+                </a>
+            `).join('');
+
+            // Show video section
+            document.getElementById('video-info').classList.add('visible');
+        }
+
+        // Allow pressing Enter to fetch info
+        document.getElementById('url-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fetchVideoInfo();
+            }
+        });
+    </script>
 </body>
 </html>
