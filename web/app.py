@@ -3,10 +3,11 @@
 
 from __future__ import unicode_literals
 
-import json
+import logging
 import os
 import sys
 import threading
+import time
 import uuid
 
 # Add parent directory to path to import youtube_dl
@@ -18,16 +19,42 @@ import youtube_dl
 
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Thread-safe lock for downloads dictionary
 downloads_lock = threading.Lock()
 
 # Store download progress and status
+# Max entries to prevent memory leaks
+MAX_DOWNLOADS = 100
 downloads = {}
 DOWNLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'downloads')
 
 # Create downloads directory if it doesn't exist
 if not os.path.exists(DOWNLOAD_DIR):
     os.makedirs(DOWNLOAD_DIR)
+
+
+def cleanup_old_downloads():
+    """Remove old download entries to prevent memory leaks."""
+    with downloads_lock:
+        if len(downloads) > MAX_DOWNLOADS:
+            # Sort by status: keep 'downloading' and 'processing', remove old 'complete' and 'error'
+            removable = [
+                k for k, v in downloads.items()
+                if v['status'] in ('complete', 'error')
+            ]
+            # Remove oldest entries (first half of removable)
+            for key in removable[:len(removable) // 2]:
+                download = downloads[key]
+                if download.get('filename') and os.path.exists(download['filename']):
+                    try:
+                        os.remove(download['filename'])
+                    except OSError as e:
+                        logger.warning("Failed to remove file %s: %s", download['filename'], e)
+                del downloads[key]
 
 
 class DownloadLogger:
@@ -169,6 +196,9 @@ def start_download():
     if not url:
         return jsonify({'error': 'URL is required'}), 400
 
+    # Clean up old downloads to prevent memory leaks
+    cleanup_old_downloads()
+
     # Generate a unique download ID
     download_id = str(uuid.uuid4())[:8]
 
@@ -240,8 +270,8 @@ def cleanup_download(download_id):
             if download['filename'] and os.path.exists(download['filename']):
                 try:
                     os.remove(download['filename'])
-                except OSError:
-                    pass
+                except OSError as e:
+                    logger.warning("Failed to cleanup file %s: %s", download['filename'], e)
             del downloads[download_id]
 
     return jsonify({'success': True})
