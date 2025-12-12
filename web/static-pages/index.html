@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .video-info {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .video-info.visible {
+            display: block;
+        }
+
+        .video-preview {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .video-preview img {
+            width: 200px;
+            height: 112px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #ddd;
+        }
+
+        .video-details h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .video-details p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .download-options {
+            margin-top: 20px;
+        }
+
+        .download-options h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .download-card {
+            display: block;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 2px solid #e1e1e1;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .download-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .download-card .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .download-card .label {
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .download-card .sublabel {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8d7da;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #004085;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .video-preview {
+                flex-direction: column;
+            }
+
+            .video-preview img {
+                width: 100%;
+                height: auto;
+            }
+
+            .download-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📺</div>
+        <h1>YouTube Downloader</h1>
+
+        <div class="input-group">
+            <input type="text" id="url-input" placeholder="Paste YouTube URL here..." />
+            <button id="fetch-btn" onclick="fetchVideoInfo()">Get Video</button>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+
+        <div class="video-info" id="video-info">
+            <div class="video-preview">
+                <img id="video-thumbnail" src="" alt="Video thumbnail" />
+                <div class="video-details">
+                    <h3 id="video-title"></h3>
+                    <p id="video-author"></p>
+                </div>
+            </div>
+
+            <div class="download-options">
+                <h4>📥 Download Options:</h4>
+                <div class="download-grid" id="download-grid"></div>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 How to download:</strong><br>
+                Click any download button above. You'll be taken to a download service where you can choose your preferred quality and format.
+            </div>
+        </div>
+
+        <footer>
+            Powered by <a href="https://github.com/ytdl-org/youtube-dl" target="_blank" rel="noopener noreferrer">youtube-dl</a>
+        </footer>
+    </div>
+
+    <script>
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.classList.add('visible');
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.remove('visible');
+        }
+
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([^&\n?#]+)/,
+                /^([a-zA-Z0-9_-]{11})$/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        async function fetchVideoInfo() {
+            const urlInput = document.getElementById('url-input');
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                showError('Please enter a YouTube URL');
+                return;
+            }
+
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                showError('Invalid YouTube URL. Please enter a valid YouTube video link.');
+                return;
+            }
+
+            hideError();
+            document.getElementById('video-info').classList.remove('visible');
+
+            const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+            // Display video thumbnail (this always works)
+            document.getElementById('video-thumbnail').src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+            document.getElementById('video-title').textContent = 'Click a download option below';
+            document.getElementById('video-author').textContent = `Video ID: ${videoId}`;
+
+            // Try to get video info via oEmbed (may fail due to CORS but that's ok)
+            try {
+                const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(youtubeUrl)}&format=json`;
+                const response = await fetch(oembedUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('video-title').textContent = data.title;
+                    document.getElementById('video-author').textContent = `by ${data.author_name}`;
+                }
+            } catch (e) {
+                // oEmbed failed (CORS), but we can still provide download links
+                console.log('oEmbed not available, using fallback');
+            }
+
+            // Create download options using various free services
+            const downloadGrid = document.getElementById('download-grid');
+            
+            const services = [
+                {
+                    icon: '🎬',
+                    label: 'Download Video (MP4)',
+                    sublabel: 'via SaveFrom.net',
+                    url: `https://en.savefrom.net/1-youtube-video-downloader-4/#url=${encodeURIComponent(youtubeUrl)}`
+                },
+                {
+                    icon: '🎵',
+                    label: 'Download Audio (MP3)',
+                    sublabel: 'via Y2Mate',
+                    url: `https://www.y2mate.com/youtube-mp3/${videoId}`
+                },
+                {
+                    icon: '📱',
+                    label: 'Y2Mate',
+                    sublabel: 'Multiple formats',
+                    url: `https://www.y2mate.com/youtube/${videoId}`
+                },
+                {
+                    icon: '⚡',
+                    label: 'SSYouTube',
+                    sublabel: 'Fast download',
+                    url: `https://ssyoutube.com/watch?v=${videoId}`
+                },
+                {
+                    icon: '🔄',
+                    label: '9Convert',
+                    sublabel: 'HD Quality',
+                    url: `https://9convert.com/download?url=${encodeURIComponent(youtubeUrl)}`
+                },
+                {
+                    icon: '💾',
+                    label: 'Cobalt',
+                    sublabel: 'Open source',
+                    url: `https://cobalt.tools/#url=${encodeURIComponent(youtubeUrl)}`
+                }
+            ];
+
+            downloadGrid.innerHTML = services.map(service => `
+                <a href="${service.url}" target="_blank" rel="noopener noreferrer" class="download-card">
+                    <div class="icon">${service.icon}</div>
+                    <div class="label">${service.label}</div>
+                    <div class="sublabel">${service.sublabel}</div>
+                </a>
+            `).join('');
+
+            // Show video section
+            document.getElementById('video-info').classList.add('visible');
+        }
+
+        // Allow pressing Enter to fetch info
+        document.getElementById('url-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fetchVideoInfo();
+            }
+        });
+    </script>
+</body>
+</html>

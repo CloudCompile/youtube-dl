@@ -1,0 +1,2 @@
+# Requirements for the web interface
+Flask>=2.0.0
