@@ -297,7 +297,7 @@
         </button>
 
         <footer>
-            Powered by <a href="https://github.com/ytdl-org/youtube-dl" target="_blank">youtube-dl</a>
+            Powered by <a href="https://github.com/ytdl-org/youtube-dl" target="_blank" rel="noopener noreferrer">youtube-dl</a>
         </footer>
     </div>
 
@@ -420,6 +420,12 @@
             const downloadBtn = document.getElementById('start-download-btn');
             downloadBtn.disabled = true;
 
+            // Clean up any previous download
+            if (currentDownloadId) {
+                fetch(`/api/cleanup/${currentDownloadId}`, { method: 'POST' });
+                currentDownloadId = null;
+            }
+
             document.getElementById('progress-container').classList.add('visible');
             document.getElementById('progress-fill').style.width = '0%';
             document.getElementById('progress-text').textContent = 'Starting download...';
@@ -500,6 +506,11 @@
         function downloadFile() {
             if (currentDownloadId) {
                 window.location.href = `/api/file/${currentDownloadId}`;
+                // Clean up after a short delay to allow the download to start
+                setTimeout(() => {
+                    fetch(`/api/cleanup/${currentDownloadId}`, { method: 'POST' });
+                    currentDownloadId = null;
+                }, 2000);
             }
         }
 

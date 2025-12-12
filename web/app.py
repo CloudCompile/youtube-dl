@@ -18,6 +18,9 @@ import youtube_dl
 
 app = Flask(__name__)
 
+# Thread-safe lock for downloads dictionary
+downloads_lock = threading.Lock()
+
 # Store download progress and status
 downloads = {}
 DOWNLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'downloads')
@@ -169,16 +172,17 @@ def start_download():
     # Generate a unique download ID
     download_id = str(uuid.uuid4())[:8]
 
-    # Initialize download tracking
-    downloads[download_id] = {
-        'status': 'starting',
-        'progress': '0%',
-        'speed': 'N/A',
-        'eta': 'N/A',
-        'filename': None,
-        'error': None,
-        'logs': [],
-    }
+    # Initialize download tracking (thread-safe)
+    with downloads_lock:
+        downloads[download_id] = {
+            'status': 'starting',
+            'progress': '0%',
+            'speed': 'N/A',
+            'eta': 'N/A',
+            'filename': None,
+            'error': None,
+            'logs': [],
+        }
 
     # Start download in background thread
     thread = threading.Thread(target=do_download, args=(download_id, url, format_id))
@@ -230,17 +234,22 @@ def download_file(download_id):
 @app.route('/api/cleanup/<download_id>', methods=['POST'])
 def cleanup_download(download_id):
     """Clean up a completed download."""
-    if download_id in downloads:
-        download = downloads[download_id]
-        if download['filename'] and os.path.exists(download['filename']):
-            try:
-                os.remove(download['filename'])
-            except OSError:
-                pass
-        del downloads[download_id]
+    with downloads_lock:
+        if download_id in downloads:
+            download = downloads[download_id]
+            if download['filename'] and os.path.exists(download['filename']):
+                try:
+                    os.remove(download['filename'])
+                except OSError:
+                    pass
+            del downloads[download_id]
 
     return jsonify({'success': True})
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Use environment variables for production configuration
+    debug_mode = os.environ.get('FLASK_DEBUG', 'true').lower() == 'true'
+    host = os.environ.get('FLASK_HOST', '127.0.0.1')
+    port = int(os.environ.get('FLASK_PORT', '5000'))
+    app.run(debug=debug_mode, host=host, port=port)

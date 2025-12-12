@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader - Web Interface</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .feature-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #6a9955;
+        }
+
+        .code-block .command {
+            color: #dcdcaa;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 5px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #856404;
+        }
+
+        .note strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                display: block;
+                text-align: center;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📺</div>
+        <h1>YouTube Downloader</h1>
+        <p class="subtitle">A browser-based web interface for downloading YouTube videos</p>
+
+        <ul class="feature-list">
+            <li>
+                <span class="feature-icon">🔗</span>
+                <span>Enter any YouTube video URL</span>
+            </li>
+            <li>
+                <span class="feature-icon">📋</span>
+                <span>View video information (title, thumbnail, duration)</span>
+            </li>
+            <li>
+                <span class="feature-icon">🎬</span>
+                <span>Select your preferred video quality/format</span>
+            </li>
+            <li>
+                <span class="feature-icon">📊</span>
+                <span>Track download progress in real-time</span>
+            </li>
+            <li>
+                <span class="feature-icon">💾</span>
+                <span>Download videos directly to your computer</span>
+            </li>
+        </ul>
+
+        <div class="section">
+            <h2>🚀 Quick Start</h2>
+            <div class="code-block">
+                <span class="comment"># Clone the repository</span><br>
+                <span class="command">git clone https://github.com/ytdl-org/youtube-dl.git</span><br>
+                <span class="command">cd youtube-dl</span><br><br>
+                <span class="comment"># Install dependencies</span><br>
+                <span class="command">pip install -r requirements-web.txt</span><br><br>
+                <span class="comment"># Start the web server</span><br>
+                <span class="command">cd web</span><br>
+                <span class="command">python app.py</span><br><br>
+                <span class="comment"># Open in browser: http://localhost:5000</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ Configuration</h2>
+            <p>You can configure the server using environment variables:</p>
+            <div class="code-block">
+                <span class="comment"># Set debug mode (default: true)</span><br>
+                <span class="command">export FLASK_DEBUG=false</span><br><br>
+                <span class="comment"># Set host (default: 127.0.0.1)</span><br>
+                <span class="command">export FLASK_HOST=0.0.0.0</span><br><br>
+                <span class="comment"># Set port (default: 5000)</span><br>
+                <span class="command">export FLASK_PORT=8080</span>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>⚠️ Note</strong>
+            This is a self-hosted application. GitHub Pages hosts this documentation, but the actual downloader requires running the Flask server on your own machine or server.
+        </div>
+
+        <div class="buttons">
+            <a href="https://github.com/ytdl-org/youtube-dl" class="btn" target="_blank" rel="noopener noreferrer">
+                📦 View on GitHub
+            </a>
+            <a href="https://github.com/ytdl-org/youtube-dl/archive/refs/heads/master.zip" class="btn btn-secondary">
+                ⬇️ Download ZIP
+            </a>
+        </div>
+
+        <footer>
+            Powered by <a href="https://github.com/ytdl-org/youtube-dl" target="_blank" rel="noopener noreferrer">youtube-dl</a>
+        </footer>
+    </div>
+</body>
+</html>
